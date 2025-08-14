@@ -6,14 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Paintbrush, Bot, User, Type, BotIcon } from 'lucide-react';
+import { Paintbrush, Bot, User, Type, BotIcon, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import type { PersonaChatInput } from "@/ai/flows/persona-chat";
+import { generateImage } from "@/ai/flows/generate-image";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function SettingsPage() {
+  const { toast } = useToast();
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
 
   useEffect(() => {
     try {
@@ -33,6 +41,32 @@ export default function SettingsPage() {
       localStorage.setItem('aiLanguage', newLanguage);
     } catch (error) {
       console.error("Failed to save language to localStorage", error);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!imagePrompt) {
+      toast({
+        variant: "destructive",
+        title: "Prompt is required",
+        description: "Please enter a prompt to generate an image.",
+      });
+      return;
+    }
+    setIsGenerating(true);
+    setGeneratedImage(null);
+    try {
+      const result = await generateImage({ prompt: imagePrompt });
+      setGeneratedImage(result.imageDataUri);
+    } catch (error) {
+      console.error("Image generation failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Image Generation Failed",
+        description: "Could not generate image. Please try again.",
+      });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -69,9 +103,38 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid w-full max-w-sm items-center gap-1.5">
                 <Label htmlFor="prompt">Image Prompt</Label>
-                <Input id="prompt" type="text" placeholder="e.g., a friendly robot with a warm smile" />
+                <Input 
+                  id="prompt" 
+                  type="text" 
+                  placeholder="e.g., a friendly robot with a warm smile" 
+                  value={imagePrompt}
+                  onChange={(e) => setImagePrompt(e.target.value)}
+                  disabled={isGenerating}
+                />
               </div>
-              <Button>Generate Image</Button>
+              <Button onClick={handleGenerateImage} disabled={isGenerating}>
+                {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Generate Image
+              </Button>
+               {isGenerating && (
+                <div className="flex items-center justify-center p-8">
+                  <p>Generating your image...</p>
+                </div>
+              )}
+              {generatedImage && (
+                <div className="mt-4">
+                  <Label>Generated Image</Label>
+                  <div className="mt-2 rounded-lg overflow-hidden border">
+                    <Image
+                      src={generatedImage}
+                      alt="Generated AI"
+                      width={512}
+                      height={512}
+                      className="w-full h-auto"
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
           
