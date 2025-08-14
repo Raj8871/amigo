@@ -24,7 +24,7 @@ export function ChatMessages({ messages, persona, isLoading }: ChatMessagesProps
   }, [messages, isLoading]);
 
   return (
-    <ScrollArea className="flex-1" viewportProps={{ ref: viewportRef }}>
+    <ScrollArea className="flex-1" viewportRef={viewportRef}>
       <div className="p-4 md:p-6 space-y-6">
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} persona={persona} />
