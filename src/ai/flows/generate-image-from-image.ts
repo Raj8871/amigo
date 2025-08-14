@@ -38,21 +38,21 @@ const generateImageFromImageFlow = ai.defineFlow(
     outputSchema: GenerateImageFromImageOutputSchema,
   },
   async ({prompt, imageDataUri}) => {
-    
-    const fullPrompt = `Analyze the face of the person in the provided image. Generate 5 new images of the exact same person but in the following style or setting: ${prompt}. Keep the facial features identical.`;
+    const generationPromises = Array(5)
+      .fill(null)
+      .map((_, i) => {
+        const fullPrompt = `Analyze the face of the person in the provided image. Generate a new image of the exact same person but in the following style or setting: ${prompt}. Keep the facial features identical. This is image ${
+          i + 1
+        } of 5.`;
 
-    const generationPromises = Array(5).fill(null).map(() => 
-        ai.generate({
-            model: 'googleai/gemini-2.0-flash-preview-image-generation',
-            prompt: [
-                {text: fullPrompt},
-                {media: {url: imageDataUri}}
-            ],
-            config: {
-                responseModalities: ['TEXT', 'IMAGE'],
-            },
-        })
-    );
+        return ai.generate({
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
+          prompt: [{text: fullPrompt}, {media: {url: imageDataUri}}],
+          config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+          },
+        });
+      });
 
     const results = await Promise.all(generationPromises);
 
