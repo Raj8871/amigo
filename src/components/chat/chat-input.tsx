@@ -75,7 +75,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             value={text}
             onChange={handleTextChange}
             placeholder="Type a message..."
-            className="flex-1 resize-none pr-20 h-24 overflow-y-auto"
+            className="flex-1 resize-none pr-20 h-10 overflow-y-auto"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
