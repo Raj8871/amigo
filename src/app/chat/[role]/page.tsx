@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { personaChat } from '@/ai/flows/persona-chat';
+import { personaChat, PersonaChatInput } from '@/ai/flows/persona-chat';
 import { personas, Persona } from '@/lib/personas';
 import { useToast } from '@/hooks/use-toast';
 import { ChatHeader } from '@/components/chat/chat-header';
@@ -24,8 +24,18 @@ export default function ChatPage() {
   const [persona, setPersona] = useState<Persona | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
 
   useEffect(() => {
+    try {
+      const storedLanguage = localStorage.getItem('aiLanguage') as PersonaChatInput['language'];
+      if (storedLanguage) {
+        setLanguage(storedLanguage);
+      }
+    } catch (error) {
+      console.error("Failed to read language from localStorage", error);
+    }
+
     const role = params.role as string;
     const currentPersona = personas[role];
 
@@ -91,6 +101,7 @@ export default function ChatPage() {
         role: persona.promptRole,
         message: text,
         chatHistory,
+        language: language,
       });
 
       const aiMessage: Message = {

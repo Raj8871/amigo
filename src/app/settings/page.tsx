@@ -6,10 +6,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Paintbrush, Languages, Bot, User, Type, CaseSensitive, BotIcon } from 'lucide-react';
+import { Paintbrush, Bot, User, Type, BotIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from "react";
+import type { PersonaChatInput } from "@/ai/flows/persona-chat";
+
 
 export default function SettingsPage() {
+  const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
+
+  useEffect(() => {
+    try {
+      const storedLanguage = localStorage.getItem('aiLanguage') as PersonaChatInput['language'];
+      if (storedLanguage) {
+        setLanguage(storedLanguage);
+      }
+    } catch (error) {
+      console.error("Failed to read language from localStorage", error);
+    }
+  }, []);
+
+  const handleLanguageChange = (value: string) => {
+    const newLanguage = value as PersonaChatInput['language'];
+    setLanguage(newLanguage);
+    try {
+      localStorage.setItem('aiLanguage', newLanguage);
+    } catch (error) {
+      console.error("Failed to save language to localStorage", error);
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -88,15 +115,14 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label>AI Conversation Language</Label>
-                <Select>
+                <Select value={language} onValueChange={handleLanguageChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="fr">Français</SelectItem>
-                    <SelectItem value="hi">हिन्दी</SelectItem>
+                    <SelectItem value="English">English</SelectItem>
+                    <SelectItem value="Hindi">Hindi</SelectItem>
+                    <SelectItem value="Hinglish">Hinglish</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

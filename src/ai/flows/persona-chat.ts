@@ -16,7 +16,8 @@ const PersonaChatInputSchema = z.object({
     .enum(['Brother', 'Friend', 'Girlfriend', 'Mother', 'Father'])
     .describe('The role of the AI persona.'),
   message: z.string().describe('The user message to respond to.'),
-  chatHistory: z.string().optional().describe('Previous chat history if any')
+  chatHistory: z.string().optional().describe('Previous chat history if any'),
+  language: z.enum(['English', 'Hindi', 'Hinglish']).default('English').optional().describe('The language for the AI to respond in.')
 });
 export type PersonaChatInput = z.infer<typeof PersonaChatInputSchema>;
 
@@ -33,7 +34,9 @@ const personaChatPrompt = ai.definePrompt({
   name: 'personaChatPrompt',
   input: {schema: PersonaChatInputSchema},
   output: {schema: PersonaChatOutputSchema},
-  prompt: `You are an AI persona, and your role is {{{role}}}. Please respond to the following message from the user, tailoring your tone, language, and style to match the persona of a {{{role}}}. Consider the chat history to maintain context.
+  prompt: `You are an AI persona, and your role is {{{role}}}. Please respond to the following message from the user, tailoring your tone, language, and style to match the persona of a {{{role}}}.
+You MUST respond in the following language: {{{language}}}.
+Consider the chat history to maintain context.
 
 Chat History: {{chatHistory}}
 
