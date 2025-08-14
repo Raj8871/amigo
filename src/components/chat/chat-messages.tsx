@@ -16,19 +16,23 @@ interface ChatMessagesProps {
 }
 
 export function ChatMessages({ messages, persona, userProfile, isLoading, onDeleteMessage }: ChatMessagesProps) {
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (viewportRef.current) {
-      viewportRef.current.scrollTo({
-        top: viewportRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
+    const timer = setTimeout(() => {
+        if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTo({
+            top: scrollAreaRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+    }, 100); // Small delay to allow DOM to update before scrolling
+
+    return () => clearTimeout(timer);
   }, [messages, isLoading]);
 
   return (
-    <ScrollArea className="flex-1" viewportRef={viewportRef}>
+    <ScrollArea className="flex-1" viewportRef={scrollAreaRef}>
       <div className="p-4 md:p-6 space-y-6">
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} persona={persona} userProfile={userProfile} onDelete={onDeleteMessage} />

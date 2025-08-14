@@ -23,6 +23,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
     if (text.trim() && !isLoading) {
       onSendMessage(text);
       setText('');
+      textareaRef.current?.focus();
     }
   };
 
