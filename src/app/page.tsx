@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { PersonaSelector } from "@/components/chat/persona-selector";
-import { Pencil } from "lucide-react";
+import { Facebook, Instagram, Pencil, Twitter } from "lucide-react";
 
 export default function Home() {
   return (
@@ -88,9 +88,43 @@ export default function Home() {
             </div>
         </section>
       </main>
-      <footer className="border-t">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-center text-muted-foreground">
+      <footer className="border-t bg-background">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <h3 className="font-headline text-2xl font-bold text-primary">AI Amigo</h3>
+              <p className="text-muted-foreground text-sm">
+                Your human-like AI chat companion, ready to talk anytime.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold tracking-wide text-foreground">Product</h4>
+              <ul className="mt-4 space-y-2 text-sm">
+                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Features</Link></li>
+                <li><Link href="/chat/friend" className="text-muted-foreground hover:text-foreground">Personas</Link></li>
+                <li><Link href="/settings" className="text-muted-foreground hover:text-foreground">Settings</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold tracking-wide text-foreground">Company</h4>
+              <ul className="mt-4 space-y-2 text-sm">
+                <li><Link href="#" className="text-muted-foreground hover:text-foreground">About</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Careers</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold tracking-wide text-foreground">Follow Us</h4>
+              <div className="mt-4 flex space-x-4">
+                <Link href="#" className="text-muted-foreground hover:text-foreground"><Twitter className="h-6 w-6" /></Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground"><Facebook className="h-6 w-6" /></Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground"><Instagram className="h-6 w-6" /></Link>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
             <p>&copy; {new Date().getFullYear()} AI Amigo. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
