@@ -88,17 +88,19 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>AI Persona Descriptions</Label>
-                <Button variant="outline" className="w-full justify-start gap-2">
-                    <Bot className="h-4 w-4" />
-                    <span>Change Persona Descriptions</span>
+                <Label>Edit Your Profile</Label>
+                <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                    <Link href="/settings/user-profile">
+                      <User className="h-4 w-4" />
+                      <span>Change Your Name &amp; DP</span>
+                    </Link>
                 </Button>
               </div>
               <div className="space-y-2">
                 <Label>AI Display Pictures</Label>
                  <Button variant="outline" className="w-full justify-start gap-2" asChild>
                     <Link href="/settings/persona">
-                      <User className="h-4 w-4" />
+                      <Bot className="h-4 w-4" />
                       <span>Change AI Display Pictures</span>
                     </Link>
                 </Button>

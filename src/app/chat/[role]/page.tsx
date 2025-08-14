@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
 import { ChatInput } from '@/components/chat/chat-input';
+import type { UserProfile } from '@/lib/user-profile';
+
 
 export interface Message {
   id: string;
@@ -25,7 +27,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
-  
+  const [userProfile, setUserProfile] = useState<UserProfile>({ name: 'You', avatar: '' });
+
   useEffect(() => {
     const role = params.role as string;
     
@@ -39,8 +42,12 @@ export default function ChatPage() {
       if (storedLanguage) {
         setLanguage(storedLanguage);
       }
+      const storedProfile = localStorage.getItem('userProfile');
+      if (storedProfile) {
+        setUserProfile(JSON.parse(storedProfile));
+      }
     } catch (error) {
-      console.error("Failed to read language from localStorage", error);
+      console.error("Failed to read from localStorage", error);
     }
     
     try {
@@ -134,7 +141,7 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <ChatHeader persona={persona} isLoading={isLoading} />
-      <ChatMessages messages={messages} persona={persona} isLoading={isLoading} />
+      <ChatMessages messages={messages} persona={persona} userProfile={userProfile} isLoading={isLoading} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>
   );

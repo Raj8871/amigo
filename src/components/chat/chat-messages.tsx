@@ -1,17 +1,20 @@
+
 import { useEffect, useRef } from 'react';
 import { Message } from '@/app/chat/[role]/page';
 import { Persona } from '@/lib/personas';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './chat-message';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import type { UserProfile } from '@/lib/user-profile';
 
 interface ChatMessagesProps {
   messages: Message[];
   persona: Persona;
+  userProfile: UserProfile;
   isLoading: boolean;
 }
 
-export function ChatMessages({ messages, persona, isLoading }: ChatMessagesProps) {
+export function ChatMessages({ messages, persona, userProfile, isLoading }: ChatMessagesProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export function ChatMessages({ messages, persona, isLoading }: ChatMessagesProps
     <ScrollArea className="flex-1" viewportRef={viewportRef}>
       <div className="p-4 md:p-6 space-y-6">
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} persona={persona} />
+          <ChatMessage key={message.id} message={message} persona={persona} userProfile={userProfile} />
         ))}
         {isLoading && (
           <div className="flex items-end space-x-2">

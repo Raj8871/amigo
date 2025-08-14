@@ -1,14 +1,17 @@
+
 import { Message } from '@/app/chat/[role]/page';
 import { Persona } from '@/lib/personas';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import type { UserProfile } from '@/lib/user-profile';
 
 interface ChatMessageProps {
   message: Message;
   persona: Persona;
+  userProfile: UserProfile;
 }
 
-export function ChatMessage({ message, persona }: ChatMessageProps) {
+export function ChatMessage({ message, persona, userProfile }: ChatMessageProps) {
   const isUser = message.sender === 'user';
   return (
     <div
@@ -33,6 +36,12 @@ export function ChatMessage({ message, persona }: ChatMessageProps) {
       >
         <p className="text-sm">{message.text}</p>
       </div>
+       {isUser && (
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={userProfile.avatar} alt={userProfile.name} />
+          <AvatarFallback>{userProfile.name?.charAt(0) || 'Y'}</AvatarFallback>
+        </Avatar>
+      )}
     </div>
   );
 }
