@@ -8,6 +8,7 @@ import { Paintbrush, Bot, User, Type, BotIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from "react";
 import type { PersonaChatInput } from "@/ai/flows/persona-chat";
+import { Label } from "@/components/ui/label";
 
 
 export default function SettingsPage() {
