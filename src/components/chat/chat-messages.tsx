@@ -12,9 +12,10 @@ interface ChatMessagesProps {
   persona: Persona;
   userProfile: UserProfile;
   isLoading: boolean;
+  onDeleteMessage: (id: string) => void;
 }
 
-export function ChatMessages({ messages, persona, userProfile, isLoading }: ChatMessagesProps) {
+export function ChatMessages({ messages, persona, userProfile, isLoading, onDeleteMessage }: ChatMessagesProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function ChatMessages({ messages, persona, userProfile, isLoading }: Chat
     <ScrollArea className="flex-1" viewportRef={viewportRef}>
       <div className="p-4 md:p-6 space-y-6">
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} persona={persona} userProfile={userProfile} />
+          <ChatMessage key={message.id} message={message} persona={persona} userProfile={userProfile} onDelete={onDeleteMessage} />
         ))}
         {isLoading && (
           <div className="flex items-end space-x-2">

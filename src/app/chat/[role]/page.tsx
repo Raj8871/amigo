@@ -87,6 +87,10 @@ export default function ChatPage() {
     }
   }, [messages, persona]);
 
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages((prevMessages) => prevMessages.filter((m) => m.id !== messageId));
+  };
+
 
   const handleSendMessage = async (text: string) => {
     if (!persona) return;
@@ -139,9 +143,9 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background overflow-hidden">
       <ChatHeader persona={persona} isLoading={isLoading} />
-      <ChatMessages messages={messages} persona={persona} userProfile={userProfile} isLoading={isLoading} />
+      <ChatMessages messages={messages} persona={persona} userProfile={userProfile} isLoading={isLoading} onDeleteMessage={handleDeleteMessage} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>
   );
