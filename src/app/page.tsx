@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { PersonaSelector } from "@/components/chat/persona-selector";
+import { Pencil } from "lucide-react";
 
 export default function Home() {
   return (
@@ -13,6 +14,12 @@ export default function Home() {
             AI Amigo
           </Link>
           <div className="flex items-center space-x-4">
+            <Button variant="outline" asChild>
+              <Link href="/settings">
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
