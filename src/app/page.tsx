@@ -16,9 +16,6 @@ export default function Home() {
              <Button variant="ghost" asChild>
                 <Link href="/chat/friend">Try Demo</Link>
              </Button>
-             <Button asChild>
-                 <Link href="#">Sign Up Free</Link>
-             </Button>
           </div>
         </div>
       </header>
