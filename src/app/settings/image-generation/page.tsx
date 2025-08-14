@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { generateImage } from '@/ai/flows/generate-image';
 import { generateImageFromImage } from '@/ai/flows/generate-image-from-image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 
 export default function ImageGenerationPage() {
@@ -97,6 +97,7 @@ export default function ImageGenerationPage() {
     <>
       <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-3xl">
+            <DialogTitle className="sr-only">Generated Image</DialogTitle>
            {selectedImage && (
             <Image
                 src={selectedImage}
