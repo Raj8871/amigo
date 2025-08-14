@@ -12,19 +12,19 @@ interface ChatMessagesProps {
 }
 
 export function ChatMessages({ messages, persona, isLoading }: ChatMessagesProps) {
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({
+        top: viewportRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
   }, [messages, isLoading]);
 
   return (
-    <ScrollArea className="flex-1" viewportRef={scrollAreaRef}>
+    <ScrollArea className="flex-1" viewportProps={{ ref: viewportRef }}>
       <div className="p-4 md:p-6 space-y-6">
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} persona={persona} />
