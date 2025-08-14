@@ -10,6 +10,16 @@ import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
 import { ChatInput } from '@/components/chat/chat-input';
 import type { UserProfile } from '@/lib/user-profile';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 export interface Message {
@@ -31,6 +41,9 @@ export default function ChatPage() {
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
   const [userProfile, setUserProfile] = useState<UserProfile>({ name: 'You', avatar: '' });
   const [conversationStyle, setConversationStyle] = useState<string>('');
+
+  const [tapCount, setTapCount] = useState(0);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   useEffect(() => {
     if (!role) {
@@ -95,10 +108,41 @@ export default function ChatPage() {
     }
   }, [messages, persona]);
 
+  useEffect(() => {
+    if (tapCount === 5) {
+      setShowDeleteAllDialog(true);
+      setTapCount(0);
+    }
+
+    if (tapCount > 0) {
+      const timer = setTimeout(() => setTapCount(0), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [tapCount]);
+
   const handleDeleteMessage = (messageId: string) => {
     setMessages((prevMessages) => prevMessages.filter((m) => m.id !== messageId));
   };
 
+  const handleDeleteAllMessages = () => {
+    if (!persona) return;
+    const initialMessage = {
+        id: 'initial',
+        sender: 'ai' as const,
+        text: persona.initialMessage,
+    };
+    setMessages([initialMessage]);
+    try {
+        localStorage.removeItem(`chat_${persona.key}`);
+    } catch (error) {
+        console.error("Failed to remove messages from localStorage", error);
+    }
+    setShowDeleteAllDialog(false);
+    toast({
+        title: "Chat Cleared",
+        description: `All messages with ${persona.name} have been deleted.`,
+    });
+  };
 
   const handleSendMessage = async (text: string) => {
     if (!persona) return;
@@ -152,10 +196,27 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background overflow-hidden">
-      <ChatHeader persona={persona} isLoading={isLoading} />
-      <ChatMessages messages={messages} persona={persona} userProfile={userProfile} isLoading={isLoading} onDeleteMessage={handleDeleteMessage} />
-      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
-    </div>
+    <>
+      <div className="flex flex-col h-screen bg-background overflow-hidden" onClick={() => setTapCount(c => c + 1)}>
+        <ChatHeader persona={persona} isLoading={isLoading} />
+        <ChatMessages messages={messages} persona={persona} userProfile={userProfile} isLoading={isLoading} onDeleteMessage={handleDeleteMessage} />
+        <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      </div>
+
+      <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete All Messages?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the entire conversation with {persona.name}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setTapCount(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAllMessages}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
