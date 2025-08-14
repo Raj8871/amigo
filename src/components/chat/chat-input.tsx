@@ -18,13 +18,6 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [text]);
-
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (text.trim() && !isLoading) {
@@ -82,8 +75,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             value={text}
             onChange={handleTextChange}
             placeholder="Type a message..."
-            className="flex-1 resize-none pr-20 max-h-40 overflow-y-auto"
-            rows={1}
+            className="flex-1 resize-none pr-20 h-24 overflow-y-auto"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
