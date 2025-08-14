@@ -13,9 +13,6 @@ export default function Home() {
             AI Amigo
           </Link>
           <div className="flex items-center space-x-4">
-             <Button variant="ghost" asChild>
-                <Link href="/chat/friend">Try Demo</Link>
-             </Button>
           </div>
         </div>
       </header>
