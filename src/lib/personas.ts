@@ -1,3 +1,4 @@
+
 import { BookOpen, GraduationCap, Heart, Home, LucideIcon, Users, User } from 'lucide-react';
 
 export type Persona = {
@@ -53,3 +54,25 @@ export const personas: Record<string, Persona> = {
 };
 
 export const personaKeys = Object.keys(personas);
+
+export const getPersonas = (): Record<string, Persona> => {
+    if (typeof window === 'undefined') {
+        return personas;
+    }
+    try {
+        const storedPersonas = localStorage.getItem('personas');
+        if (storedPersonas) {
+            const parsed = JSON.parse(storedPersonas);
+            // Quick validation to ensure icons are not lost
+            Object.keys(parsed).forEach(key => {
+                if (personas[key]) {
+                    parsed[key].icon = personas[key].icon;
+                }
+            });
+            return parsed;
+        }
+    } catch (e) {
+        console.error("Could not parse personas from local storage", e);
+    }
+    return personas;
+}

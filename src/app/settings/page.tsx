@@ -158,9 +158,11 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label>AI Display Pictures</Label>
-                 <Button variant="outline" className="w-full justify-start gap-2">
-                    <User className="h-4 w-4" />
-                    <span>Change AI Display Pictures</span>
+                 <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                    <Link href="/settings/persona">
+                      <User className="h-4 w-4" />
+                      <span>Change AI Display Pictures</span>
+                    </Link>
                 </Button>
               </div>
                <div className="space-y-2">

@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { personaChat, PersonaChatInput } from '@/ai/flows/persona-chat';
-import { personas, Persona } from '@/lib/personas';
+import { personas as defaultPersonas, Persona } from '@/lib/personas';
 import { useToast } from '@/hooks/use-toast';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatMessages } from '@/components/chat/chat-messages';
@@ -28,6 +28,11 @@ export default function ChatPage() {
   
   useEffect(() => {
     const role = params.role as string;
+    
+    if (!role) {
+      router.push('/');
+      return;
+    }
 
     try {
       const storedLanguage = localStorage.getItem('aiLanguage') as PersonaChatInput['language'];
@@ -37,38 +42,33 @@ export default function ChatPage() {
     } catch (error) {
       console.error("Failed to read language from localStorage", error);
     }
+    
+    try {
+        const storedPersonas = localStorage.getItem('personas');
+        const personas = storedPersonas ? JSON.parse(storedPersonas) : defaultPersonas;
+        const currentPersona = personas[role];
 
-    if (role) {
-      const currentPersona = personas[role];
-
-      if (currentPersona) {
-        setPersona(currentPersona);
-        try {
-          const storedMessages = localStorage.getItem(`chat_${role}`);
-          if (storedMessages) {
-            setMessages(JSON.parse(storedMessages));
-          } else {
-            const initialMessage = {
-              id: 'initial',
-              sender: 'ai' as const,
-              text: currentPersona.initialMessage,
-            };
-            setMessages([initialMessage]);
-          }
-        } catch (error) {
-          console.error("Failed to parse messages from localStorage", error);
-          const initialMessage = {
-            id: 'initial',
-            sender: 'ai' as const,
-            text: currentPersona.initialMessage,
-          };
-          setMessages([initialMessage]);
+        if (currentPersona) {
+            setPersona(currentPersona);
+            const storedMessages = localStorage.getItem(`chat_${role}`);
+            if (storedMessages) {
+                setMessages(JSON.parse(storedMessages));
+            } else {
+                const initialMessage = {
+                    id: 'initial',
+                    sender: 'ai' as const,
+                    text: currentPersona.initialMessage,
+                };
+                setMessages([initialMessage]);
+            }
+        } else {
+            router.push('/');
         }
-      } else {
+    } catch (error) {
+        console.error("Failed to process personas or messages", error);
         router.push('/');
-      }
     }
-  }, [params, router]);
+  }, [params.role, router]);
 
   useEffect(() => {
     if (persona && messages.length > 0) {
