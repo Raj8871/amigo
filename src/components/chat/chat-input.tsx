@@ -1,7 +1,7 @@
 import { useState, useRef, FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Mic, Paperclip, Smile } from 'lucide-react';
+import { Send, Mic, Smile } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { emojis } from '@/lib/emojis';
 
@@ -85,14 +85,11 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             disabled={isLoading}
             autoFocus
           />
-          <Button variant="ghost" size="icon" type="button" className="flex-shrink-0">
-            <Paperclip />
-          </Button>
           <Button size="icon" type="submit" disabled={isLoading || !text.trim()} className="flex-shrink-0">
             {text.trim() ? <Send /> : <Mic />}
           </Button>
         </form>
-        <div className="absolute bottom-3 right-24 text-xs text-muted-foreground">
+        <div className="absolute bottom-3 right-14 text-xs text-muted-foreground">
           {text.length} / {MAX_CHARACTERS}
         </div>
       </div>
