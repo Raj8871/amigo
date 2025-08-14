@@ -25,6 +25,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
+  
+  const role = Array.isArray(params.role) ? params.role[0] : params.role;
 
   useEffect(() => {
     try {
@@ -36,16 +38,25 @@ export default function ChatPage() {
       console.error("Failed to read language from localStorage", error);
     }
 
-    const role = params.role as string;
-    const currentPersona = personas[role];
+    if (role) {
+      const currentPersona = personas[role];
 
-    if (currentPersona) {
-      setPersona(currentPersona);
-      try {
-        const storedMessages = localStorage.getItem(`chat_${role}`);
-        if (storedMessages) {
-          setMessages(JSON.parse(storedMessages));
-        } else {
+      if (currentPersona) {
+        setPersona(currentPersona);
+        try {
+          const storedMessages = localStorage.getItem(`chat_${role}`);
+          if (storedMessages) {
+            setMessages(JSON.parse(storedMessages));
+          } else {
+            const initialMessage = {
+              id: 'initial',
+              sender: 'ai' as const,
+              text: currentPersona.initialMessage,
+            };
+            setMessages([initialMessage]);
+          }
+        } catch (error) {
+          console.error("Failed to parse messages from localStorage", error);
           const initialMessage = {
             id: 'initial',
             sender: 'ai' as const,
@@ -53,19 +64,11 @@ export default function ChatPage() {
           };
           setMessages([initialMessage]);
         }
-      } catch (error) {
-        console.error("Failed to parse messages from localStorage", error);
-        const initialMessage = {
-          id: 'initial',
-          sender: 'ai' as const,
-          text: currentPersona.initialMessage,
-        };
-        setMessages([initialMessage]);
+      } else {
+        router.push('/');
       }
-    } else {
-      router.push('/');
     }
-  }, [params.role, router]);
+  }, [role, router]);
 
   useEffect(() => {
     if (persona && messages.length > 0) {
