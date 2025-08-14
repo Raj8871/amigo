@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Paintbrush, Bot, User, Type, BotIcon } from 'lucide-react';
+import { Paintbrush, Bot, User, Type, BotIcon, MessageSquareHeart } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from "react";
 import type { PersonaChatInput } from "@/ai/flows/persona-chat";
@@ -107,16 +107,12 @@ export default function SettingsPage() {
               </div>
                <div className="space-y-2">
                 <Label>AI Conversation Style</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select style" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="formal">Formal</SelectItem>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="humorous">Humorous</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Button variant="outline" className="w-full justify-start gap-2" asChild>
+                    <Link href="/settings/persona-style">
+                      <MessageSquareHeart className="h-4 w-4" />
+                      <span>Customize Conversation Style</span>
+                    </Link>
+                </Button>
               </div>
               <div className="space-y-2">
                 <Label>AI Conversation Language</Label>

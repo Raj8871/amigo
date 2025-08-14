@@ -22,16 +22,17 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
+  const role = Array.isArray(params.role) ? params.role[0] : params.role;
+
 
   const [persona, setPersona] = useState<Persona | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
   const [userProfile, setUserProfile] = useState<UserProfile>({ name: 'You', avatar: '' });
+  const [conversationStyle, setConversationStyle] = useState<string>('');
 
   useEffect(() => {
-    const role = params.role as string;
-    
     if (!role) {
       router.push('/');
       return;
@@ -45,6 +46,13 @@ export default function ChatPage() {
       const storedProfile = localStorage.getItem('userProfile');
       if (storedProfile) {
         setUserProfile(JSON.parse(storedProfile));
+      }
+      const storedStyles = localStorage.getItem('personaStyles');
+      if (storedStyles) {
+        const styles = JSON.parse(storedStyles);
+        if (styles[role]) {
+            setConversationStyle(styles[role]);
+        }
       }
     } catch (error) {
       console.error("Failed to read from localStorage", error);
@@ -75,7 +83,7 @@ export default function ChatPage() {
         console.error("Failed to process personas or messages", error);
         router.push('/');
     }
-  }, [params, router]);
+  }, [role, router]);
 
   useEffect(() => {
     if (persona && messages.length > 0) {
@@ -116,6 +124,7 @@ export default function ChatPage() {
         message: text,
         chatHistory,
         language: language,
+        conversationStyle: conversationStyle
       });
 
       const aiMessage: Message = {
