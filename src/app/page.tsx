@@ -43,7 +43,7 @@ export default function Home() {
                         Experience Lifelike Conversations
                     </h2>
                     <p className="mt-4 text-muted-foreground">
-                        Our advanced AI adapts its personality, tone, and style based on the role you choose. Whether you need a supportive friend, a caring mother, or a fun-loving girlfriend, AI Amigo delivers a uniquely tailored chat experience.
+                        Our advanced AI adapts its personality, tone, and style based on the role you choose. Whether you need a supportive friend, a caring mother, a fun-loving girlfriend, AI Amigo delivers a uniquely tailored chat experience.
                     </p>
                     <Button asChild size="lg" className="mt-8">
                         <Link href="/chat/friend">Start Chatting Now</Link>
@@ -53,7 +53,7 @@ export default function Home() {
                   <Card className="overflow-hidden">
                     <CardContent className="p-0">
                       <Image
-                          src="https://placehold.co/600x400.png"
+                          src="https://images.unsplash.com/photo-1677442136019-21780ecad995?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxBaSUyMHxlbnwwfHx8fDE3NTUwMjE0Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080"
                           alt="Chat illustration"
                           width={600}
                           height={400}
