@@ -26,9 +26,9 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
   
-  const role = Array.isArray(params.role) ? params.role[0] : params.role;
-
   useEffect(() => {
+    const role = params.role as string;
+
     try {
       const storedLanguage = localStorage.getItem('aiLanguage') as PersonaChatInput['language'];
       if (storedLanguage) {
@@ -68,7 +68,7 @@ export default function ChatPage() {
         router.push('/');
       }
     }
-  }, [role, router]);
+  }, [params, router]);
 
   useEffect(() => {
     if (persona && messages.length > 0) {
