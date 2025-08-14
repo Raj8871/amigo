@@ -1,3 +1,4 @@
+
 import { useState, useRef, FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +17,13 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [text]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -46,7 +54,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   return (
     <div className="p-2 md:p-4 border-t bg-background">
       <div className="relative">
-        <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+        <form onSubmit={handleSubmit} className="flex items-end space-x-2">
            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" type="button" className="flex-shrink-0">
@@ -74,7 +82,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             value={text}
             onChange={handleTextChange}
             placeholder="Type a message..."
-            className="flex-1 resize-none pr-20"
+            className="flex-1 resize-none pr-20 max-h-40 overflow-y-auto"
             rows={1}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -89,7 +97,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             {text.trim() ? <Send /> : <Mic />}
           </Button>
         </form>
-        <div className="absolute bottom-3 right-14 text-xs text-muted-foreground">
+        <div className="absolute -bottom-4 right-14 text-xs text-muted-foreground">
           {text.length} / {MAX_CHARACTERS}
         </div>
       </div>
