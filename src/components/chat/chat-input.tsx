@@ -97,7 +97,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             {text.trim() ? <Send /> : <Mic />}
           </Button>
         </form>
-        <div className="absolute -bottom-4 right-14 text-xs text-muted-foreground">
+        <div className="absolute -top-5 right-2 text-xs text-muted-foreground">
           {text.length} / {MAX_CHARACTERS}
         </div>
       </div>
