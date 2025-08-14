@@ -2,6 +2,8 @@ import { useState, useRef, FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, Mic, Paperclip, Smile } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { emojis } from '@/lib/emojis';
 
 interface ChatInputProps {
   onSendMessage: (text: string) => void;
@@ -13,6 +15,7 @@ const MAX_CHARACTERS = 500;
 export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -34,13 +37,38 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
     }
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    setText((prev) => (prev + emoji).slice(0, MAX_CHARACTERS));
+    setPopoverOpen(false);
+    textareaRef.current?.focus();
+  };
+
   return (
     <div className="p-2 md:p-4 border-t bg-background">
       <div className="relative">
         <form onSubmit={handleSubmit} className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" type="button" className="flex-shrink-0">
-            <Smile />
-          </Button>
+           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" type="button" className="flex-shrink-0">
+                <Smile />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="grid grid-cols-8 gap-2">
+                {emojis.map((emoji) => (
+                  <Button
+                    key={emoji}
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEmojiSelect(emoji)}
+                    className="text-2xl"
+                  >
+                    {emoji}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
           <Textarea
             ref={textareaRef}
             value={text}
