@@ -68,7 +68,7 @@ export default function ChatPage() {
         console.error("Failed to process personas or messages", error);
         router.push('/');
     }
-  }, [params.role, router]);
+  }, [params, router]);
 
   useEffect(() => {
     if (persona && messages.length > 0) {
