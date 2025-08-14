@@ -56,13 +56,14 @@ const generateImageFromImageFlow = ai.defineFlow(
 
     const results = await Promise.all(generationPromises);
 
-    const imageDataUris = results.map(result => {
-        if (!result.media?.url) {
-            throw new Error('One or more image generations failed.');
-        }
-        return result.media.url;
-    });
+    const imageDataUris = results
+      .map(result => result.media?.url)
+      .filter((url): url is string => !!url);
 
+    if (imageDataUris.length === 0) {
+      throw new Error('All image generations failed.');
+    }
+    
     return {
       imageDataUris,
     };
