@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -27,19 +28,45 @@ export default function ChatPage() {
   useEffect(() => {
     const role = params.role as string;
     const currentPersona = personas[role];
+
     if (currentPersona) {
       setPersona(currentPersona);
-      setMessages([
-        {
+      try {
+        const storedMessages = localStorage.getItem(`chat_${role}`);
+        if (storedMessages) {
+          setMessages(JSON.parse(storedMessages));
+        } else {
+          const initialMessage = {
+            id: 'initial',
+            sender: 'ai' as const,
+            text: currentPersona.initialMessage,
+          };
+          setMessages([initialMessage]);
+        }
+      } catch (error) {
+        console.error("Failed to parse messages from localStorage", error);
+        const initialMessage = {
           id: 'initial',
-          sender: 'ai',
+          sender: 'ai' as const,
           text: currentPersona.initialMessage,
-        },
-      ]);
+        };
+        setMessages([initialMessage]);
+      }
     } else {
       router.push('/');
     }
   }, [params.role, router]);
+
+  useEffect(() => {
+    if (persona && messages.length > 0) {
+      try {
+        localStorage.setItem(`chat_${persona.key}`, JSON.stringify(messages));
+      } catch (error) {
+        console.error("Failed to save messages to localStorage", error);
+      }
+    }
+  }, [messages, persona]);
+
 
   const handleSendMessage = async (text: string) => {
     if (!persona) return;
@@ -49,7 +76,9 @@ export default function ChatPage() {
       sender: 'user',
       text,
     };
-    setMessages((prev) => [...prev, userMessage]);
+    
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
@@ -77,8 +106,8 @@ export default function ChatPage() {
         title: 'Error',
         description: 'Failed to get a response. Please try again.',
       });
-      // remove the user message if the AI fails
-       setMessages((prev) => prev.slice(0, -1));
+      // revert to previous messages if AI fails
+       setMessages(messages);
     } finally {
       setIsLoading(false);
     }
