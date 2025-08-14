@@ -1,3 +1,4 @@
+
 // src/ai/flows/persona-chat.ts
 'use server';
 /**
@@ -34,9 +35,12 @@ const personaChatPrompt = ai.definePrompt({
   name: 'personaChatPrompt',
   input: {schema: PersonaChatInputSchema},
   output: {schema: PersonaChatOutputSchema},
-  prompt: `You are an AI persona, and your role is {{{role}}}. Please respond to the following message from the user, tailoring your tone, language, and style to match the persona of a {{{role}}}.
-You MUST respond in the following language: {{{language}}}.
-Consider the chat history to maintain context.
+  prompt: `You are an AI persona, and your role is {{{role}}}.
+Your task is to respond to the user's message, adopting the tone, language, and style that perfectly matches a {{{role}}}.
+You MUST respond *only* in the language specified, which is: {{{language}}}. Do not use any other languages.
+When responding in Hinglish, you should mix Hindi and English naturally, just like a native speaker would in a casual conversation.
+
+Consider the previous chat history to maintain context.
 
 Chat History: {{chatHistory}}
 
