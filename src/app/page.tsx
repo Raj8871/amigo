@@ -25,13 +25,31 @@ export default function Home() {
       </header>
       
       <main className="flex-1">
-        <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 md:pt-24 text-center">
-            <h1 className="font-headline text-4xl font-extrabold tracking-tight lg:text-5xl">
-                Your Human-Like AI Chat Companion
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                Choose a persona and start a conversation. Your AI Amigo is here to listen, support, and chat with you, anytime you need.
-            </p>
+        <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 md:pt-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-center md:text-left">
+              <h1 className="font-headline text-4xl font-extrabold tracking-tight lg:text-5xl">
+                  Your Human-Like AI Chat Companion
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+                  Choose a persona and start a conversation. Your AI Amigo is here to listen, support, and chat with you, anytime you need.
+              </p>
+            </div>
+            <div>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <Image
+                      src="https://i.postimg.cc/1tNjKtjS/shes-honestly-the-best-female-character-in-this-anime-v0-twjohid540qd1.jpg"
+                      alt="Anime character"
+                      width={600}
+                      height={400}
+                      className="w-full h-auto object-cover"
+                      data-ai-hint="anime character"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </section>
 
         <section className="sticky top-16 z-40 bg-background/95 py-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
