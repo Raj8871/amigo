@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { personaChat, PersonaChatInput } from '@/ai/flows/persona-chat';
+import { personaChat, PersonaChatInput, PersonaChatOutput } from '@/ai/flows/persona-chat';
 import { personas as defaultPersonas, Persona } from '@/lib/personas';
 import { useToast } from '@/hooks/use-toast';
 import { ChatHeader } from '@/components/chat/chat-header';
@@ -26,28 +26,37 @@ export interface Message {
   id: string;
   sender: 'user' | 'ai';
   text: string;
+  imageUrl?: string | null;
 }
 
 export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const role = Array.isArray(params.role) ? params.role[0] : params.role;
-
-
+  
+  const [role, setRole] = useState<string | null>(null);
   const [persona, setPersona] = useState<Persona | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<PersonaChatInput['language']>('English');
   const [userProfile, setUserProfile] = useState<UserProfile>({ name: 'You', avatar: '' });
   const [conversationStyle, setConversationStyle] = useState<string>('');
+  const [lastImageDataUri, setLastImageDataUri] = useState<string | null>(null);
 
   const [tapCount, setTapCount] = useState(0);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   useEffect(() => {
+    const roleFromParams = Array.isArray(params.role) ? params.role[0] : params.role;
+    if (roleFromParams) {
+      setRole(roleFromParams);
+    }
+  }, [params]);
+
+
+  useEffect(() => {
     if (!role) {
-      router.push('/');
+      // router.push('/'); // Disabled to prevent redirect on initial render
       return;
     }
 
@@ -163,19 +172,26 @@ export default function ChatPage() {
         .map((m) => `${m.sender === 'user' ? 'User' : 'AI'}: ${m.text}`)
         .join('\n');
 
-      const response = await personaChat({
+      const response: PersonaChatOutput = await personaChat({
         role: persona.promptRole,
         message: text,
         chatHistory,
         language: language,
-        conversationStyle: conversationStyle
+        conversationStyle: conversationStyle,
+        lastImageDataUri: lastImageDataUri
       });
 
       const aiMessage: Message = {
         id: crypto.randomUUID(),
         sender: 'ai',
         text: response.response,
+        imageUrl: response.imageUrl
       };
+
+      if (response.imageUrl) {
+        setLastImageDataUri(response.imageUrl);
+      }
+
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error fetching AI response:', error);
