@@ -43,7 +43,7 @@ export function ChatMessage({ message, persona, userProfile, onDelete }: ChatMes
               <AvatarFallback>{persona.name.charAt(0)}</AvatarFallback>
             </Avatar>
           )}
-          <div className="max-w-xs md:max-w-md lg:max-w-xl">
+          <div className="max-w-[250px] md:max-w-sm p-2 rounded-lg" style={{ backgroundColor: isUser ? 'hsl(var(--primary))' : 'hsl(var(--muted))' }}>
              <Dialog>
                 <DialogTrigger asChild>
                     <Image
@@ -54,7 +54,7 @@ export function ChatMessage({ message, persona, userProfile, onDelete }: ChatMes
                         className="rounded-lg cursor-pointer object-cover"
                     />
                 </DialogTrigger>
-                <DialogContent className="max-w-3xl">
+                <DialogContent className="max-w-3xl p-2 sm:p-4">
                     <Image
                         src={message.imageUrl}
                         alt="AI generated image"
@@ -62,16 +62,19 @@ export function ChatMessage({ message, persona, userProfile, onDelete }: ChatMes
                         height={1024}
                         className="w-full h-auto rounded-lg"
                     />
+                    <div className="flex justify-end pt-2">
+                        <Button variant="outline" asChild>
+                            <a href={message.imageUrl} download={`ai-amigo-${message.id}.png`}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Download
+                            </a>
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
-            <div className="flex items-center justify-between mt-1 px-1">
-                <p className="text-sm">{message.text}</p>
-                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                    <a href={message.imageUrl} download="ai-amigo-image.png">
-                        <Download className="h-4 w-4" />
-                    </a>
-                </Button>
-            </div>
+            {message.text && (
+                <p className={cn("text-sm mt-2 px-1", isUser ? 'text-primary-foreground' : 'text-foreground')}>{message.text}</p>
+            )}
           </div>
            {isUser && (
             <Avatar className="h-8 w-8">
