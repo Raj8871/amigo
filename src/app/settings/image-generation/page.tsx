@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Loader2, Paintbrush, Upload } from 'lucide-react';
+import { ArrowLeft, Loader2, Paintbrush, Upload, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { generateImage } from '@/ai/flows/generate-image';
 import { generateImageFromImage } from '@/ai/flows/generate-image-from-image';
+import { combineImages } from '@/ai/flows/combine-images';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
@@ -26,6 +27,12 @@ export default function ImageGenerationPage() {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
+  const [combinePrompt, setCombinePrompt] = useState('');
+  const [image1, setImage1] = useState<string | null>(null);
+  const [image2, setImage2] = useState<string | null>(null);
+  const [combinedImage, setCombinedImage] = useState<string | null>(null);
+  const [isCombining, setIsCombining] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -92,6 +99,58 @@ export default function ImageGenerationPage() {
     }
   };
 
+  const handleImage1Upload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage1(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImage2Upload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage2(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCombineImages = async () => {
+    if (!image1 || !image2) {
+      toast({ variant: "destructive", title: "Both images are required" });
+      return;
+    }
+    if (!combinePrompt) {
+      toast({ variant: "destructive", title: "A description prompt is required" });
+      return;
+    }
+    setIsCombining(true);
+    setCombinedImage(null);
+    try {
+      const result = await combineImages({
+        prompt: combinePrompt,
+        image1DataUri: image1,
+        image2DataUri: image2
+      });
+      setCombinedImage(result.imageDataUri);
+    } catch (error) {
+      console.error("Image combination failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Image Combination Failed",
+        description: "Could not combine images. Please try again.",
+      });
+    } finally {
+      setIsCombining(false);
+    }
+  }
+
 
   return (
     <>
@@ -124,9 +183,10 @@ export default function ImageGenerationPage() {
 
         <main className="flex-1 container mx-auto max-w-4xl py-12 px-4 sm:px-6 lg:px-8">
           <Tabs defaultValue="text-to-image" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="text-to-image">Generate from Text</TabsTrigger>
               <TabsTrigger value="image-to-image">Generate from Image</TabsTrigger>
+              <TabsTrigger value="combine-photo">Combined Photo</TabsTrigger>
             </TabsList>
             
             <TabsContent value="text-to-image">
@@ -254,6 +314,94 @@ export default function ImageGenerationPage() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+             <TabsContent value="combine-photo">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-6 w-6" />
+                    Combined Photo
+                  </CardTitle>
+                  <CardDescription>
+                    Merge two images into a single, cohesive photograph.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="space-y-2">
+                       <Label htmlFor="image1-upload">Image 1</Label>
+                       <Input
+                          id="image1-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImage1Upload}
+                          disabled={isCombining}
+                          className="cursor-pointer"
+                        />
+                        {image1 && (
+                          <div className="mt-2 rounded-lg overflow-hidden border w-full max-w-sm mx-auto">
+                            <Image src={image1} alt="Image 1" width={256} height={256} className="w-full h-auto object-cover" />
+                          </div>
+                        )}
+                     </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="image2-upload">Image 2</Label>
+                        <Input
+                          id="image2-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImage2Upload}
+                          disabled={isCombining}
+                          className="cursor-pointer"
+                        />
+                        {image2 && (
+                          <div className="mt-2 rounded-lg overflow-hidden border w-full max-w-sm mx-auto">
+                            <Image src={image2} alt="Image 2" width={256} height={256} className="w-full h-auto object-cover" />
+                          </div>
+                        )}
+                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="combine-prompt">Description of Combined Scene</Label>
+                    <Input
+                      id="combine-prompt"
+                      type="text"
+                      placeholder="e.g., Two friends talking on a park bench"
+                      value={combinePrompt}
+                      onChange={(e) => setCombinePrompt(e.target.value)}
+                      disabled={isCombining || !image1 || !image2}
+                    />
+                  </div>
+                   <Button onClick={handleCombineImages} disabled={isCombining || !image1 || !image2 || !combinePrompt}>
+                    {isCombining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Combine Images
+                  </Button>
+                  
+                  {isCombining && (
+                    <div className="flex flex-col items-center justify-center p-8 border rounded-lg">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      <p className="mt-4 text-muted-foreground">Combining your images, please wait...</p>
+                    </div>
+                  )}
+
+                  {combinedImage && (
+                    <div className="mt-4">
+                      <Label>Combined Image</Label>
+                       <button onClick={() => setSelectedImage(combinedImage)} className="mt-2 rounded-lg overflow-hidden border block w-full cursor-pointer">
+                        <Image
+                          src={combinedImage}
+                          alt="Combined AI"
+                          width={512}
+                          height={512}
+                          className="w-full h-auto"
+                        />
+                      </button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
           </Tabs>
         </main>
       </div>
